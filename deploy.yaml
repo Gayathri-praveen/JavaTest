@@ -1,31 +1,22 @@
----
-- hosts: all
-  tasks:
-    - name: Install Docker
-      yum:
-        name:
-          - python-pip
-        state: latest
-        update_cache: true
-        
-    - name: Install Docker SDK for Python
-      pip:
-        name: "docker<5" 
-
-    - name: Ensure docker deamon is running
-      service:
-        name: docker
-        state: started
-      become: true
-
-    - name: Execute the command in remote shell; stdout goes to the specified file on the remote.
-      shell: aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 230601024369.dkr.ecr.ap-south-1.amazonaws.com
-      become: true
-    
-    - name: deploy docker container
-      docker_container:
-        name: javatest
-        image: 230601024369.dkr.ecr.ap-south-1.amazonaws.com/javatest:latest
-        state: started
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: javaapp
+  labels:
+    app: javaapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: javaapp
+  template:
+    metadata:
+      labels:
+        app: javaapp
+    spec:
+      containers:
+      - name: docker-container
+        image: 929896200375.dkr.ecr.ap-south-1.amazonaws.com/mydocker:latest
+        imagePullPolicy: Always
         ports:
-          - "9090:9090"
+        - containerPort: 8080
