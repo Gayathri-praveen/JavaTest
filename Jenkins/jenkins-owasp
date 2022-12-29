@@ -1,0 +1,42 @@
+pipeline{
+  agent any
+  environment {
+        PATH = "$PATH:/usr/share/apache-maven/bin"
+            }
+    stages {
+        stage('Git Checkout'){
+            steps{
+                git 'https://github.com/Gayathri-praveen/JavaTest.git'
+            }
+        }
+        
+        
+        stage('Dependency Check'){
+            steps
+               {
+                   dependencyCheck additionalArguments: ''' 
+                    -project hello-world 
+                    -scan /var/lib/jenkins/workspace/pipeline-job
+                    -format "ALL" ''', odcInstallation: 'OWASP-Dependency-Check'
+                    
+                    dependencyCheckPublisher failedNewCritical: 1, 
+                    failedNewHigh: 1, 
+                    failedTotalCritical: 1, 
+                    failedTotalHigh: 1, pattern: '', 
+                    unstableNewCritical: 1, 
+                    unstableNewHigh: 1, 
+                    unstableTotalCritical: 1, 
+                    unstableTotalHigh: 1
+                }
+        }
+        
+        
+        stage('Build code'){
+            steps
+               {
+                   sh "mvn clean install"
+                }
+        }
+        
+    }
+}
