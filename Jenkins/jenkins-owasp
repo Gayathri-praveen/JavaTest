@@ -15,7 +15,7 @@ pipeline{
             steps
                {
                    dependencyCheck additionalArguments: ''' 
-                    -project hello-world 
+                    -project Java-test
                     -scan /var/lib/jenkins/workspace/pipeline-job
                     -format "ALL" ''', odcInstallation: 'OWASP-Dependency-Check'
                     
